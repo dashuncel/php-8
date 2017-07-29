@@ -1,16 +1,11 @@
 <?php
-require_once 'functions.php';
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR .'functions.php';
 
 $errors = []; // массив ошибок
 $nameButton = ""; // название кнопки на форме зависит от GET-параметра
 $nameLink = ""; // название ссылки
 $blockTime = 0; // время бокировки - запоминаем
-static $counter_1 = 0;
-static $counter_2 = 0;
-
-define('MAX_BEF_captcha',5); // сколько попыток ввести неверный пароль есть у пользователя
-define('MAX_BEF_LOCK',7); // сколько попыток ввести капчу есть у пользователя до блокировки
-define('TIME_LOCK', 120 ); // время блокировки пользователя в секундах
 
 if (isAuthorized()) {
     redirect('index','');
@@ -18,7 +13,6 @@ if (isAuthorized()) {
 
 if (!session_id()) {
     session_start();
-    echo $_SESSION['counter_1'] ."<br/>";
 }
 
 // проверяем, есть ли блокировка на клиенте?
@@ -30,62 +24,6 @@ if (isset($_COOKIE['block'])) {
 //------ ПРОВЕРКА КАПЧИ --------:
 if (isset($_POST['check'])) {
     checkCaptcha();
-}
-
-//------ АВТОРИЗАЦИЯ/РЕГИСТРАЦИЯ ПОЛЬЗОВАТЕЛЯ --------:
-if (isset($_POST['enter'])) {
-    foreach ($errors as $key => $err) {
-        unset($errors['$key']);
-    }
-
-    $login = filter_input(INPUT_POST, 'login');
-    $passwd = filter_input(INPUT_POST, 'password');
-
-    //---регистрация:---
-    if ($typeAltForm == ENTER['param']) {
-        registration($login, $passwd);
-    } //---авторизация:---
-    elseif ($typeAltForm == REG['param']) {
-        autorization($login, $passwd);
-    }
-}
-
-//--авторизация:
-function autorization($login, $passwd)
-{
-    global $errors;
-    static $counter = 0;
-
-    if ($login == "Гость") {
-        $_SESSION['user'] = $login;
-        redirect('list', ''); // пропускаем админскую страничку, сразу к списку тестов
-    }
-
-    if (login($login, $passwd)) {
-        $_SESSION['user'] = $login;
-        $counter = 0;
-        redirect('admin', '');
-    } else {
-        $counter++;
-        echo $counter . ' ' . $passwd . "<br/>";
-        $errors[] = 'Неверный логин или пароль';
-        if ($counter > MAX_BEF_LOCK) {
-            echo '1'; // признак того что нам нао отобразить капчу!
-        }
-    }
-}
-
-//--регистрация:
-function registration ($login, $passwd) {
-    global $errors;
-
-    $res = addUser($login, $passwd);
-    if ($res === true) {
-        $_SESSION['user'] = $login;
-        redirect('admin', ''); // пропускаем админскую страничку, сразу к списку тестов
-    }
-    else
-        $errors[] = $res;
 }
 
 //---проверка капчи:
@@ -120,8 +58,8 @@ function  checkCaptcha()
 </head>
 <body>
 <div id="container">
-    <form action="" method="POST" enctype="multipart/form-data" class="mainform">
-        <p class="forgot"><a href="index.php?type=<?=$typeAltForm?>"><?= $nameLink ?></a></p>
+    <form action="login.php" method="POST" enctype="multipart/form-data" class="mainform">
+        <p class="forgot"><a href="#">Регистрация</a><a class="hidden" href="#">Вход</a></p>
         <label for="name">Логин:</label>
         <input type="name" name="login" required>
         <label for="username">Пароль:</label>
@@ -134,12 +72,13 @@ function  checkCaptcha()
             </ul>
         </div>
         <div id="lower">
-            <input type="submit" name="enter" value=<?= $nameButton ?>>
+            <input type="submit" name="enter" value="Войти" class ='enter'>
+            <input type="submit" name="reg" value="Регистрация" class = 'reg hidden'>
         </div>
     </form>
     <form class="captcha hidden" action="" method="POST" enctype="multipart/form-data">
         <div class="captcha">
-            <p><img src='gencaptcha.php' alt='Капча'/></p>
+            <p><img src='./core/gencaptcha.php' alt='Капча'/></p>
             <p>Проверочный код: <input type='text' name='captcha'/></p>
             <p><input type='submit' name='check' value='Отправить'/></p>
         </div>
@@ -149,13 +88,26 @@ function  checkCaptcha()
     'use strict';
     $('#lower input').click(function(event) { // надо вручную обработать результат, чтобы решить, отобразить капчу или нет
         event.preventDefault();
-        .post("",
-               $('.mainform').serialize(),
+        let data = $('.mainform').serialize()  + "&" + this.name;
+        $.post("login.php",
+               data,
                function(data, result){
                    console.log(result, data);
             }
         );
     });
+
+    $('.forgot a').click(function(event) {
+        event.preventDefault();
+        $('#lower input').each(function (i, val) {
+            $(val).toggleClass('hidden');
+        });
+
+        $('.forgot a').each(function (i, val) {
+            $(val).toggleClass('hidden');
+        });
+    });
+
 </script>
 </body>
 </html>

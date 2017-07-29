@@ -1,4 +1,5 @@
 <?php
+//обработчик результата тестирования:
 
 session_start();
 $jsonData = $_SESSION['data'];

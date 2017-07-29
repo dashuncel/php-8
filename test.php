@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__.DIRECTORY_SEPARATOR.'lib.php';
+include_once __DIR__.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'lib.php';
 
 readDest($dest);
 session_start();
@@ -88,7 +88,7 @@ function fillForm() {
       <div class='output'></div>
    </fieldset>
    </form>
-   <form action="fileeeeeeeeeee.php" method="POST" enctype="application/json" class="mainform"> 
+   <form action="file.php" method="POST" enctype="application/json" class="mainform">
      <fieldset>
        <legend><?=$nametest?></legend>
        <label>Представьтесь, пожалуйста: <input type="text" name="fio" required></label><br/><br/>

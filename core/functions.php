@@ -1,6 +1,8 @@
 <?php
-define('USER_DATA_FILE', __DIR__ . '/json/user.json');
-define('USER_PERM_FILE', __DIR__ . '/json/permission.json');
+define('USER_DATA_FILE',  __DIR__.DIRECTORY_SEPARATOR.'users.json');
+define('MAX_BEF_CAPTCHA',5); // сколько попыток ввести неверный пароль есть у пользователя
+define('MAX_BEF_LOCK', 7); // сколько попыток ввести капчу есть у пользователя до блокировки
+define('TIME_LOCK', 120 ); // время блокировки пользователя в секундах
 
 function login($login, $password)
 {
@@ -20,11 +22,14 @@ function isAuthorized()
 
 function getUsers()
 {
-    if (!file_exists(USER_DATA_FILE)) {
+    $users = [];
+    if (! file_exists(USER_DATA_FILE)) {
         return [];
     }
+
     $data = file_get_contents(USER_DATA_FILE);
     $users = json_decode($data, true);
+
     if (!$users) {
         return [];
     }
@@ -83,21 +88,26 @@ function getPasswordHash($id, $password)
  * добавление пользователя в список пользователей
  * считаем что id упорядочены и уникальны
  * */
-function addUser($user, $password)
+function addUser($login, $password)
 {
-    $users = getUsers();
-    echo "<pre>";
-    print_r($users);
-    echo "</pre>";
+    $res = getUser($login);
 
+    if ($res !== NULL) {
+        return "Пользователь $login уже существует в системе. Войдите в систему с вашим паролем.";
+    }
+
+    $users = getUsers();
     $id = 0; // айди пользователя
     foreach ($users as $user) {
         $id = max($id, $user['id']);
     }
     $id++;
-    echo $id;
 
-    $users[] = ['id' => $id, 'login' => $user, 'password' => getPasswordHash($id, $password), 'name' => $user];
-    file_put_contents(USER_DATA_FILE, json_encode($users), LOCK_EX);
+    $users[] = ['id' => $id, 'login' => $login, 'password' => getPasswordHash($id, $password), 'name' => $login];
+    try {
+        file_put_contents(USER_DATA_FILE, json_encode($users), LOCK_EX);
+    } catch (Exception $e) {
+        return $e;
+    }
     return true;
 }

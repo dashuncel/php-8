@@ -1,6 +1,7 @@
 <?php
     
-include_once __DIR__.DIRECTORY_SEPARATOR.'lib.php';
+include_once __DIR__.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'lib.php';
+
 $result=[];
 if(isset($_POST['btn']) && isset($_FILES)) {
   if (! file_exists($dest)) { mkdir($dest); }
