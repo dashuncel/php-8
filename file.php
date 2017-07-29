@@ -34,13 +34,12 @@ if ($_POST) {
 
   $titul =  $_SESSION['titul'];
   if ($right_answers == $total_questions) {
-    $text = "Поздравляю, $name! \nВы успешно прошли тестирование \nи получаете звание \n$titul";
+    $text = "Поздравляю, $name!&Вы успешно прошли тестирование&и получаете звание&$titul";
   }
   else {
-    $text = "Сожалеем, $name \n Тестирование не пройдено";
+    $text = "Сожалеем, $name &Тестирование не пройден";
   }
   $_SESSION['text'] = $text;
 
-  echo '<div class="res"><pre>'.implode($results,"\n").'</pre></div>';
+  echo '<div class="res"><pre>'.implode($results, PHP_EOL).'</pre></div>';
 }
-?>

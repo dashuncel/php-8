@@ -1,7 +1,8 @@
 <?php 
  
 $dest="tests".DIRECTORY_SEPARATOR; // директория сфайлами теста
-$pattern="/^[0-9a-z]*.json$/"; // маска валидных файлов
+
+$pattern="/^\w*\.json$/";
 $filelist=[]; // список файлов
 $dataForPick=[];
 $jsonData=[];
@@ -52,11 +53,15 @@ function getMainMenu() {
          "list" => "Список тестов"
         ];
 
+  if (!session_id()) session_start();
+  $menu_str .= "<div class=\"login\">Здравствуй, {$_SESSION['user']} &nbsp;<a href='logout.php'>Выход</a></div>";
+
   $menu_str="<ul class=\"menu\">";
   foreach ($menu as $file => $item) { 
-    $menu_str.= "<li><a href=\"$file.php\">$item</a></li>"; 
+    $menu_str .= "<li><a href=\"$file.php\">$item</a></li>";
   }
-  $menu_str.="</ul>";
+  $menu_str .= "</ul>";
+
   return $menu_str;
 }
 

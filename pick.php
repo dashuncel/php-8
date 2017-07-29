@@ -5,4 +5,3 @@
   $img  = new Gd(500, 200, $text);
   $img->generate();
  
-?>

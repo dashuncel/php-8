@@ -30,15 +30,13 @@ if(isset($_POST['btn']) && isset($_FILES)) {
   }
   header('location: list.php');
 }
-// echo implode($result, "\n"); // здесь хотелось бы вывести это в нужном месте. Видимо чуть позже сделаю.
-
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
 	<title>Генератор тестов</title>  
-  <link rel="stylesheet" href="./gentest.css">
+  <link rel="stylesheet" href="./css/gentest.css">
 	<meta charset="utf-8">
 </head>
 <body>

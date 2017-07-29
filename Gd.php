@@ -25,29 +25,36 @@ class Gd
 
         // вычисляем размер щрифта:
         // позиционирование текста в рамке:  
-        $txt=explode("\n", $this->text);
-        $px = ($this->width - 8*strlen($txt[0])) / strlen($txt[0]); // размер шрифта
-        $pos_y = ($this->height - ($px + 10) * count($txt)) / 2;      // позиция по вертикали
-
+        $txt=explode('&', $this->text);
+        $maxlen=0;
+        foreach ($txt as $piece) { 
+          $maxlen=max($maxlen, strlen($piece));
+        }
+        $px = round (($this->width - $maxlen) / $maxlen, 0); // размер шрифта
+        $pos_y = round(($this->height - ($px + 10) * count($txt)) / 2, 0);      // позиция по вертикали
         foreach ($txt as $piece) {
-          $pos_x = ($this->width - ($px * mb_strlen($piece))) / 2 + 2*$px; // позиция по горизонтали
+          $pos_x = round(($this->width - $px / 2 * mb_strlen($piece)) / 2, 0); // позиция по горизонтали
           imagettftext($destImg, $px, 0, $pos_x, $pos_y, $textColor, $font, $piece);
+         /* echo $piece.'-'.$pos_x.'-'.$pos_y.'-'.$px.'-'.$this->width.'-'.mb_strlen($piece).'<br/>';*/
           $pos_y += $px + 10;
         } 
-/*
-         //--гербовая печать:
-        $stamp = imagecreatetruecolor($this->width / 10 , $this->width / 10);
-        $stampSrc = imageCreateFromPng(__DIR__.DIRECTORY_SEPARATOR."img".DIRECTORY_SEPARATOR."stamp.png");
-        $res=ImageCopyResampled($stamp, $stampSrc, 0, 0, 0, 0, $this->width / 10 , $this->width / 10, ImageSX($stampSrc), ImageSX($stampSrc));
 
-        $pos_x = $this->width - 2 * imageSX($stamp); // позиция по горизонтали
-        $pos_y = $this->height - 2 * imageSY($stamp); // позиция по горизонтали
+        /*--маленький штампик--*/
+        $stampW = round($this->width / 6, 0);
+        $stampH = round($this->width / 9, 0);
+
+        $stamp = imagecreatetruecolor($stampW, $stampH);
+        $stampSrc = imageCreateFromPng(__DIR__.DIRECTORY_SEPARATOR."img".DIRECTORY_SEPARATOR."stamp.png");
+        $res=ImageCopyResampled($stamp, $stampSrc, 0, 0, 0, 0, $stampW , $stampH , ImageSX($stampSrc), ImageSX($stampSrc));
+        imagealphablending($stamp, false);
+        imagesavealpha($stamp, true);
+
+        $pos_x = $this->width -  2 * $stampW; // позиция по горизонтали
+        $pos_y = $this->height - 2 * $stampH; // позиция по горизонтали
 
         imagecopy($destImg, $stamp, $pos_x, $pos_y, 0,0, imagesx($stamp), ImageSY($stamp));
-*/
         header('Content-type: image/png');
         imagePng($destImg);
         imagedestroy($destImg);
 	}
 }
-?>

@@ -22,7 +22,7 @@ function setList() {
 <html>
 <head>
 	<title>Список загруженных тестов</title>
-	<link rel="stylesheet" href="./gentest.css">
+	<link rel="stylesheet" href="./css/gentest.css">
 	<meta charset="utf-8">
 </head>
 <body>

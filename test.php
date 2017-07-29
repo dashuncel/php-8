@@ -8,7 +8,8 @@ session_start();
 if (! empty($_GET['test'])) {
   $result=array_search($_GET['test'].".json", $filelist, true);
   if ($result === false) {
-    header($_SERVER['SERVER_PROTOCOL'].'404 Not Found'); 
+    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found'); 
+    http_response_code(404);
     echo '<h2>Тест "'.$_GET['test'].'" не найден!</h2>';
     exit(); 
   } else {
@@ -23,7 +24,8 @@ if (! empty($_GET['test'])) {
   $nametest=$jsonData[0]['Название'];
   $jsonData=$jsonData[0]['Вопросы'];
 } else {
-  header($_SERVER['SERVER_PROTOCOL'].'404 Not Found'); 
+  header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found'); 
+  http_response_code(404);
   echo '<h2>Cтраница не найдена!</h2>';
   exit();
 }
@@ -75,7 +77,7 @@ function fillForm() {
 <head>
   <title><?=$nametest?></title>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="gentest.css">
+  <link rel="stylesheet" href="./css/gentest.css">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 </head>
 <body>
